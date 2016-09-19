@@ -1,0 +1,110 @@
+<?php @session_start(); if (!isset($_SESSION['login_status']) || !$_SESSION['login_status']) exit;
+
+	$table = "";
+
+	$subject = $data[ucfirst($_GET['subject'])];
+	$banner_path = "assets/img/banner/" . strtolower($_GET['subject']) .".jpeg";
+
+	foreach ($subject as $module => $module_contents) {
+		if (gettype($module_contents) !== "array") continue;
+		foreach ($module_contents as $entry => $entry_contents) {
+			$id = md5(md5($entry));
+			$table .= <<<HERE
+					<tr role="row" class="odd" id="{$id}" onclick="$.fancybox('{$entry_contents['yt_url']}', {type: 'iframe', padding : 0})">
+						<td class="v-align-middle semi-bold">$module</td>
+						<td class="v-align-middle">$entry</td>
+						<!--<td class="v-align-middle semi-bold">{$entry_contents['desc']}</td>-->
+					</tr>
+HERE;
+		}
+	}
+
+
+	$template = <<<HERE
+		<style>
+			.banner-margin{
+				margin-left:-30px !important;
+				margin-right:-30px !important;
+
+			}
+			.banner-container{
+				height:200px; 
+				background-image:url({$banner_path});
+				background-size:cover;
+				background-repeat:no-repeat;
+				background-position:center;
+				z-index:1;
+			}
+			.banner-title-back{
+				position:absolute;
+				height:200px;
+				width:50%;
+				background: -moz-linear-gradient(left, {$subject['accent']} 0%, rgba(255,255,255,0) 50%); /* FF3.6+ */
+				background: -webkit-gradient(left top, right top, color-stop(0%, {$subject['accent']}), color-stop(50%, rgba(255,255,255,0)));/* Chrome, Safari4+ */
+				background: -webkit-linear-gradient(left, {$subject['accent']} 0%, rgba(255,255,255,0) 50%); /* Chrome10+,Safari5.1+ */
+				background: -o-linear-gradient(left, {$subject['accent']} 0%, rgba(255,255,255,0) 50%); /* Opera 11.10+ */
+				background: -ms-linear-gradient(left, {$subject['accent']} 0%, rgba(255,255,255,0) 50%); /* IE 10+ */
+				background: linear-gradient(to right, {$subject['accent']} 0%, rgba(255,255,255,0) 50%);/* W3C */
+				z-index:2;
+			}
+			.banner-title{
+				font-family:"Open Sans", sans-serif;
+				font-weight:300;
+				font-size:75px;
+				color:#fff;
+				margin-top:100px;
+				margin-left:30px;
+				position:absolute;
+				line-height:75px;
+				text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+				z-index:3;
+			}
+			</style>
+
+
+		<div class="row banner-margin">
+		<div class="banner-container">
+			<div class="banner-title-back"></div>
+			<span class="banner-title">{$_GET['subject']}</span>
+		</div>
+			<div class="col-md-12">
+				<div class="panel panel-transparent">
+					<div class="panel-heading">
+			 			<hr>
+						<div class="panel-title">Available content for HSC {$_GET['subject']}.
+						</div>
+					</div>
+				<div class="panel-body">
+					<div class="table-responsive">
+						<div id="detailedTable_wrapper" class="dataTables_wrapper form-inline no-footer"><table class="table table-hover table-condensed table-detailed dataTable no-footer" id="detailedTable" role="grid">
+						<thead>
+						<tr role="row">
+							<th style="width:300px" class="sorting_disabled" rowspan="1" colspan="1">Module</th>
+							<th style="width:450px" class="sorting_disabled" rowspan="1" colspan="1">Title</th>
+							<!--<th style="" class="sorting_disabled" rowspan="1" colspan="1">Description</th>-->
+						</tr>
+						</thead>
+						<tbody>
+
+						$table
+						</tbody>
+						</table></div>
+						</div>
+					</div>
+				</div>
+			 
+			</div>
+		</div>
+
+HERE;
+
+echo $template;
+
+if (isset($_GET['open'])) { //pls dont kill me
+	echo '
+	<script>
+	window.onload = function() {
+		$("#'. md5($_GET['open']) .'").click();
+	}
+	</script>';
+}

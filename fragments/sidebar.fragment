@@ -1,0 +1,37 @@
+<?php 
+
+$html = "";
+
+if (!isset($_GET['page'])) { 
+  $accent = "bg-success"; 
+} else { 
+  $accent = "";
+}
+
+$html .= <<<HERE
+  <li class="m-t-60 ">
+    <a href="." class="detailed">
+      <span class="title">Home</span>
+    </a>
+    <span class="{$accent} icon-thumbnail" style="color: #fff"><i class="pg-home"></i></span>
+  </li>
+HERE;
+
+foreach ($data as $subject => $subject_contents) {
+  if (isset($_GET['page']) && ucwords($_GET['subject']) == ucwords($subject)) {
+    $accent = $subject_contents['accent'];
+  } else {
+    $accent = "#21252d";
+  }
+
+  $html .= <<<HERE
+  <li class="">
+    <a href="?page=listing&subject={$subject}" class="detailed">
+      <span class="title">{$subject}</span>
+    </a>
+    <span style="background-color: {$accent}; color: #fff" class="icon-thumbnail">{$subject[0]}</span>
+  </li>
+HERE;
+}
+
+echo $html;
